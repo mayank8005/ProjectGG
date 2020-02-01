@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=ZCOOL+QingKe+HuangYou&display=swap');
+
+.graph-section {
+    text-align: center;
+    margin-top: 40px;
+    padding: 2px;
+}
+.graph-canvas {
+    background-color: white;
+    width: 90vw;
+    height: 50vh;
+}
+.graph-header{
+    display: inline-block;
+    background-color: #fde03f;
+    width: 90vw;
+    padding: 5px;
+    border-radius: 10px;
+    border: 2px solid #fde03f;
+    height: 50px;
+    color: black;
+    text-align: left;
+    font-weight: bolder;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    font-size: 27px;
+}
+.graph-header-text {
+    margin: 5px 10px;
+}

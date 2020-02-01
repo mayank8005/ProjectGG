@@ -1,0 +1,14 @@
+<section class="graph-section">
+    <div class="graph-header">
+        <span class="graph-header-text">
+                {{graphHeader}}
+        </span>
+    </div>
+    <canvas 
+        class="graph-canvas" 
+        (click)="canvasClick($event)" 
+        [width]="canvasResolution.width"
+        [height]="canvasResolution.height"
+        #graphCanvas>
+    </canvas>
+</section>

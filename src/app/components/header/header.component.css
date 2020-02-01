@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+
+header {
+    background-color: #FFA726;
+    height: 70px;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.headerText {
+    display: block;
+    font-size: 27px;
+    font-weight: bolder;
+    font-family: 'Poppins', sans-serif;
+    color: black;
+}
+
+.headerText:hover{
+    color: white;
+}
