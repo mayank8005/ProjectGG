@@ -73,7 +73,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         if (!nodeSelected) {
             // setting selected node as null as no node is selected
             // older selecting will reset
-            this.store.dispatch(new GraphCanvasActions.SelectNode(null));
+            this.store.dispatch(new GraphCanvasActions.ClearNodeSelection());
 
             // creating new node
             this.generateNode(clickCoordinates);
@@ -101,7 +101,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
             this.joinNodeByEdge(initialSelectedNodeCoord, newSelectedNodeCoord);
 
             // setting selected node as null
-            this.store.dispatch(new GraphCanvasActions.SelectNode(null));
+            this.store.dispatch(new GraphCanvasActions.ClearNodeSelection());
 
         } else {
             // else no node was selected till now so selecting this node

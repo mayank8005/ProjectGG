@@ -16,6 +16,12 @@ export function graphCanvasReducer(state= initialState, action: graphCanvasActio
                 selectedNode: action.payload
             };
         }
+        case graphCanvasActions.CLEAR_NODE_SELECTION: {
+            return {
+                ...state,
+                selectedNode: null
+            }
+        }
         default: {
             return state;
         }

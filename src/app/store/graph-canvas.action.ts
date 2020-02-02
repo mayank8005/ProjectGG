@@ -4,6 +4,7 @@ import { Node } from '../shared/graph-canvas.model';
 
 // defining actions strings
 export const SELECT_NODE = 'SELECT_NODE';
+export const CLEAR_NODE_SELECTION = 'CLEAR_NODE_SELECTION'
 
 export class SelectNode implements Action {
 
@@ -12,4 +13,9 @@ export class SelectNode implements Action {
     constructor(public payload: Node) {}
 }
 
-export type graphCanvasActions = SelectNode;
+export class ClearNodeSelection implements Action {
+
+    public readonly type = CLEAR_NODE_SELECTION;
+}
+
+export type graphCanvasActions = SelectNode | ClearNodeSelection;
