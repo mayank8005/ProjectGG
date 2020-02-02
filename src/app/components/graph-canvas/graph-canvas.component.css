@@ -17,13 +17,18 @@
     padding: 5px;
     border-radius: 10px;
     border: 2px solid #fde03f;
-    height: 50px;
+    padding: 15px 0;
+    margin-bottom: 10px;
+}
+.graph-header__text {
     color: black;
-    text-align: left;
+    padding: 5px;
     font-weight: bolder;
     font-family: 'ZCOOL QingKe HuangYou', cursive;
+    text-align: left;
     font-size: 27px;
 }
-.graph-header-text {
-    margin: 5px 10px;
-}
+.graph-header__text--light {
+    font-weight: normal;
+    color: slategrey;
+};
