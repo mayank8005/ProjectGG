@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
+import { Node, Coordinates } from "../../shared/graph-canvas.model"
 
 @Component({
     selector: 'app-graph-canvas',
@@ -19,10 +20,10 @@ export class GraphCanvasComponent implements AfterViewInit {
     public nodeColor = '#0336FF';
 
     private nodeRadius = 20;
-    private nodes: { id: string, x: number, y: number }[] = [];
+    private nodes: Node[] = [];
     // if user click on canvas where any node is present
     // that node will be selected if no node is selected
-    private selectedNode: { id: string, x: number, y: number } | null = null;
+    private selectedNode: Node | null = null;
 
     constructor(private changeDetectionRef: ChangeDetectorRef, private graphStoreService: GraphStoreService) {}
 
@@ -40,8 +41,8 @@ export class GraphCanvasComponent implements AfterViewInit {
 
     // called when someone click anywhere in graph canvas
     public canvasClick(event: any) {
-        const clickCoordinates: { x: number, y: number } = this.getCanvasClickCoordinates(event);
-        const nodeSelected: { id: string, x: number, y: number } | undefined = this.nodeSelected(clickCoordinates);
+        const clickCoordinates: Coordinates = this.getCanvasClickCoordinates(event);
+        const nodeSelected: Node | undefined = this.nodeSelected(clickCoordinates);
 
         // if no node is selected, that means user want to create new node
         if (!nodeSelected) {
@@ -57,12 +58,12 @@ export class GraphCanvasComponent implements AfterViewInit {
             // any node is already selected then join both node
 
             // extracting coordinates of selected node
-            const initialSelectedNodeCoord: {x: number, y: number} = {
+            const initialSelectedNodeCoord: Coordinates = {
                 x: this.selectedNode.x,
                 y: this.selectedNode.y
             };
 
-            const newSelectedNodeCoord: {x: number, y: number} = {
+            const newSelectedNodeCoord: Coordinates = {
                 x: nodeSelected.x,
                 y: nodeSelected.y
             };
@@ -90,7 +91,7 @@ export class GraphCanvasComponent implements AfterViewInit {
     }
 
     // This function will draw edge betwwen two node in canvas
-    private joinNodeByEdge(nodeA: {x: number, y: number}, nodeB: {x: number, y: number}): void {
+    private joinNodeByEdge(nodeA: Coordinates, nodeB: Coordinates): void {
         const context = this.graph.nativeElement.getContext('2d');
         context.lineWidth = 5;
 
@@ -102,7 +103,7 @@ export class GraphCanvasComponent implements AfterViewInit {
     }
 
     // Will return node whose x and y intersect with the given coordinate else null
-    private nodeSelected(coordinates: { x: number, y: number }): { id: string, x: number, y: number } | undefined {
+    private nodeSelected(coordinates: Coordinates): Node | undefined {
         return this.nodes.find(node => {
             return Utils.isBetween(coordinates.x, node.x - this.nodeRadius, node.x + this.nodeRadius) &&
                 Utils.isBetween(coordinates.y, node.y - this.nodeRadius, node.y + this.nodeRadius);
@@ -111,7 +112,7 @@ export class GraphCanvasComponent implements AfterViewInit {
 
     // this function will generate new node in node array
     // and also add node in graphStoreService
-    private generateNode(coordinates: { x: number, y: number }): void {
+    private generateNode(coordinates: Coordinates): void {
 
         const { x, y } = coordinates;
         const id = this.generateNewNodeId();
@@ -127,14 +128,14 @@ export class GraphCanvasComponent implements AfterViewInit {
         });
     }
 
-    private getCanvasClickCoordinates(canvasEvent: any): { x: number, y: number } {
+    private getCanvasClickCoordinates(canvasEvent: any): Coordinates {
         const canvasRect = this.graph.nativeElement.getBoundingClientRect();
         // extrcting mouse coordinate on graph
         // mouse coordinate - canvas top left and canvas x and y are not same
         // x ad y depends on canvas resolution whereas mouse coordinate depends on
         // css style: refer:
         // https://stackoverflow.com/questions/43853119/javascript-wrong-mouse-position-when-drawing-on-canvas
-        const mouseCanvasCoordinate: { x: number, y: number } = {
+        const mouseCanvasCoordinate: Coordinates = {
             x: canvasEvent.offsetX,
             y: canvasEvent.offsetY
         };
@@ -149,7 +150,7 @@ export class GraphCanvasComponent implements AfterViewInit {
     }
 
     // draw node in graph @ given coordinate
-    private createNodeInGraph(canvasCoordinates: { x: number, y: number }) {
+    private createNodeInGraph(canvasCoordinates: Coordinates) {
 
         const { x, y } = canvasCoordinates;
         const context = this.graph.nativeElement.getContext('2d');
