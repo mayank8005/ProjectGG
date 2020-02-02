@@ -1,8 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent, GraphCanvasComponent } from './components';
+import { graphCanvasReducer } from './store/graph-canvas.reducer';
 
 @NgModule({
   declarations: [
@@ -11,7 +13,8 @@ import { HeaderComponent, GraphCanvasComponent } from './components';
     GraphCanvasComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    StoreModule.forRoot({graphCanvas: graphCanvasReducer})
   ],
   providers: [],
   bootstrap: [AppComponent]

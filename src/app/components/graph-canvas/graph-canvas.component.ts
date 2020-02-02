@@ -1,14 +1,24 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component,
+        ElementRef,
+        ViewChild,
+        AfterViewInit,
+        ChangeDetectorRef,
+        OnInit,
+        OnDestroy } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
-import { Node, Coordinates } from "../../shared/graph-canvas.model"
+import { Node, Coordinates } from '../../shared/graph-canvas.model';
+import * as GraphCanvasActions from '../../store/graph-canvas.action';
 
 @Component({
     selector: 'app-graph-canvas',
     templateUrl: 'graph-canvas.component.html',
     styleUrls: ['graph-canvas.component.css']
 })
-export class GraphCanvasComponent implements AfterViewInit {
+export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
 
     @ViewChild('graphCanvas', { static: false }) graph: ElementRef;
 
@@ -16,16 +26,26 @@ export class GraphCanvasComponent implements AfterViewInit {
         width: 1024,
         height: 1024
     };
-    public graphHeader = 'graph';
     public nodeColor = '#0336FF';
+    public selectedNode: Node | null = null;
 
     private nodeRadius = 20;
     private nodes: Node[] = [];
     // if user click on canvas where any node is present
     // that node will be selected if no node is selected
-    private selectedNode: Node | null = null;
 
-    constructor(private changeDetectionRef: ChangeDetectorRef, private graphStoreService: GraphStoreService) {}
+    private graphCanvasState: Subscription;
+
+    constructor(private changeDetectionRef: ChangeDetectorRef,
+                private graphStoreService: GraphStoreService,
+                private store: Store<{graphCanvas: {selectedNode: Node|null}}>) {}
+
+    ngOnInit() {
+        // setting subscription for graph canvas state
+        this.graphCanvasState = this.store.select('graphCanvas').subscribe(state => {
+                this.selectedNode = state.selectedNode;
+            });
+    }
 
     ngAfterViewInit() {
         const canvasRect = this.graph.nativeElement.getBoundingClientRect();
@@ -39,6 +59,11 @@ export class GraphCanvasComponent implements AfterViewInit {
         this.changeDetectionRef.detectChanges();
     }
 
+    ngOnDestroy() {
+        // destroying Subscription on destroy
+        this.graphCanvasState.unsubscribe();
+    }
+
     // called when someone click anywhere in graph canvas
     public canvasClick(event: any) {
         const clickCoordinates: Coordinates = this.getCanvasClickCoordinates(event);
@@ -48,7 +73,7 @@ export class GraphCanvasComponent implements AfterViewInit {
         if (!nodeSelected) {
             // setting selected node as null as no node is selected
             // older selecting will reset
-            this.selectedNode = null;
+            this.store.dispatch(new GraphCanvasActions.SelectNode(null));
 
             // creating new node
             this.generateNode(clickCoordinates);
@@ -76,11 +101,11 @@ export class GraphCanvasComponent implements AfterViewInit {
             this.joinNodeByEdge(initialSelectedNodeCoord, newSelectedNodeCoord);
 
             // setting selected node as null
-            this.selectedNode = null;
+            this.store.dispatch(new GraphCanvasActions.SelectNode(null));
 
         } else {
             // else no node was selected till now so selecting this node
-            this.selectedNode = nodeSelected;
+            this.store.dispatch(new GraphCanvasActions.SelectNode(nodeSelected));
         }
     }
 

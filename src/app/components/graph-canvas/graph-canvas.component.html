@@ -1,8 +1,11 @@
 <section class="graph-section">
     <div class="graph-header">
-        <span class="graph-header-text">
-                {{graphHeader}}
-        </span>
+        <div class="graph-header__text">
+            Graph State
+        </div>
+        <div class="graph-header__text">
+            Selected Node <span class="graph-header__text--light"> {{selectedNode ? selectedNode.id : "-"}} </span>
+        </div>
     </div>
     <canvas 
         class="graph-canvas" 
