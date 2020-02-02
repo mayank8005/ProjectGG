@@ -20,6 +20,7 @@
     padding: 15px 0;
     margin-bottom: 10px;
 }
+
 .graph-header__text {
     color: black;
     padding: 5px;
@@ -28,7 +29,8 @@
     text-align: left;
     font-size: 27px;
 }
+
 .graph-header__text--light {
     font-weight: normal;
     color: slategrey;
-};
+}

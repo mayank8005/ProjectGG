@@ -20,7 +20,7 @@ export function graphCanvasReducer(state= initialState, action: graphCanvasActio
             return {
                 ...state,
                 selectedNode: null
-            }
+            };
         }
         default: {
             return state;

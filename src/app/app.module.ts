@@ -5,12 +5,14 @@ import { StoreModule } from '@ngrx/store';
 import { AppComponent } from './app.component';
 import { HeaderComponent, GraphCanvasComponent } from './components';
 import { graphCanvasReducer } from './store/graph-canvas.reducer';
+import { HyphenPipe } from './pipes/hyphen';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    GraphCanvasComponent
+    GraphCanvasComponent,
+    HyphenPipe
   ],
   imports: [
     BrowserModule,

@@ -4,7 +4,13 @@
             Graph State
         </div>
         <div class="graph-header__text">
-            Selected Node <span class="graph-header__text--light"> {{selectedNode ? selectedNode.id : "-"}} </span>
+            Selected Node <span class="graph-header__text--light"> {{selectedNode && selectedNode.id | hyphen}} </span>
+        </div>
+        <div class="graph-header__text">
+            <div>
+                Hover node ID
+                <span class="graph-header__text--light"> {{hoverObject && hoverObject.id | hyphen}} </span>
+            </div>
         </div>
     </div>
     <canvas 
@@ -12,6 +18,8 @@
         (click)="canvasClick($event)" 
         [width]="canvasResolution.width"
         [height]="canvasResolution.height"
+        (mousemove)="canvasMouseMove($event)"
+        (mouseleave)="canvasMouseLeave()"
         #graphCanvas>
     </canvas>
 </section>
