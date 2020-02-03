@@ -204,11 +204,13 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         // if new state is null that means this is deselection scenario 
         // changing color of previously selected node to normal node color
         else if(!newSelectionState) {
-            this.drawNodeInGraph(oldSelectionState, this.nodeColor);
+            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y}
+            this.drawNodeInGraph(coordinates, this.nodeColor);
         }
         // new node is selected: changing its color to node selected color
         else {
-            this.drawNodeInGraph(newSelectionState, this.nodeSelectedColor);
+            const coordinates: Coordinates = {x: newSelectionState.x, y: newSelectionState.y}
+            this.drawNodeInGraph(coordinates, this.nodeSelectedColor);
         }
     }
 
