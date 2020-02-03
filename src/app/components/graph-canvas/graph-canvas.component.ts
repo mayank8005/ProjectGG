@@ -28,6 +28,9 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     };
     public nodeColor = '#0336FF';
     public selectedNode: Node | null = null;
+    // This object contain node if user hover on a node
+    // null if user is not hovering on any node
+    public hoverObject: Node | null = null;
 
     private nodeRadius = 20;
     private nodes: Node[] = [];
@@ -64,10 +67,21 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         this.graphCanvasState.unsubscribe();
     }
 
+    // Will be triggered when user hover on canvas
+    public canvasMouseMove(event: any): void {
+        const hoverCoordinates: Coordinates = this.getCanvasCoordinates(event);
+        this.hoverObject = this.getNodeFromCoordinates(hoverCoordinates);
+    }
+
+    // Will be triggered when user mouse leave the canvas
+    public canvasMouseLeave(): void {
+        this.hoverObject = null;
+    }
+
     // called when someone click anywhere in graph canvas
     public canvasClick(event: any) {
-        const clickCoordinates: Coordinates = this.getCanvasClickCoordinates(event);
-        const nodeSelected: Node | undefined = this.nodeSelected(clickCoordinates);
+        const clickCoordinates: Coordinates = this.getCanvasCoordinates(event);
+        const nodeSelected: Node | undefined = this.getNodeFromCoordinates(clickCoordinates);
 
         // if no node is selected, that means user want to create new node
         if (!nodeSelected) {
@@ -128,7 +142,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     // Will return node whose x and y intersect with the given coordinate else null
-    private nodeSelected(coordinates: Coordinates): Node | undefined {
+    private getNodeFromCoordinates(coordinates: Coordinates): Node | undefined {
         return this.nodes.find(node => {
             return Utils.isBetween(coordinates.x, node.x - this.nodeRadius, node.x + this.nodeRadius) &&
                 Utils.isBetween(coordinates.y, node.y - this.nodeRadius, node.y + this.nodeRadius);
@@ -153,7 +167,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
-    private getCanvasClickCoordinates(canvasEvent: any): Coordinates {
+    private getCanvasCoordinates(canvasEvent: any): Coordinates {
         const canvasRect = this.graph.nativeElement.getBoundingClientRect();
         // extrcting mouse coordinate on graph
         // mouse coordinate - canvas top left and canvas x and y are not same
