@@ -193,23 +193,18 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     // this function handle node selection and de-selection in graph(camvas level changes)
-    private handleCanvasOnNodeSelection(newSelectionState: Node|null, oldSelectionState: Node|null) : void {
-        //:NOTE both new and old selectionState cannot be Node object at same time 
+    private handleCanvasOnNodeSelection(newSelectionState: Node|null, oldSelectionState: Node|null): void {
+        // :NOTE both new and old selectionState cannot be Node object at same time
         // atleast one of them will be null
-        
+
         // if node selection new and old state both are null then do nothing
-        if(!newSelectionState && !oldSelectionState) {
+        if (!newSelectionState && !oldSelectionState) {
             return;
-        }
-        // if new state is null that means this is deselection scenario 
-        // changing color of previously selected node to normal node color
-        else if(!newSelectionState) {
-            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y}
+        } else if (!newSelectionState) {
+            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y};
             this.drawNodeInGraph(coordinates, this.nodeColor);
-        }
-        // new node is selected: changing its color to node selected color
-        else {
-            const coordinates: Coordinates = {x: newSelectionState.x, y: newSelectionState.y}
+        } else {
+            const coordinates: Coordinates = {x: newSelectionState.x, y: newSelectionState.y};
             this.drawNodeInGraph(coordinates, this.nodeSelectedColor);
         }
     }
