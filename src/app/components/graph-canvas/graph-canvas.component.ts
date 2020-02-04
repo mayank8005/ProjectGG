@@ -26,7 +26,9 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         width: 1024,
         height: 1024
     };
+    // Purple color
     public nodeColor = '#0336FF';
+    // Red color
     public nodeSelectedColor = '#FF0266';
     public selectedNode: Node | null = null;
     // This object contain node if user hover on a node
@@ -200,12 +202,15 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         // if node selection new and old state both are null then do nothing
         if (!newSelectionState && !oldSelectionState) {
             return;
-        } else if (!newSelectionState) {
-            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y};
-            this.drawNodeInGraph(coordinates, this.nodeColor);
-        } else {
+        } else if (newSelectionState) {
+            // if new state contain some node then changing that nodes color to selected color
             const coordinates: Coordinates = {x: newSelectionState.x, y: newSelectionState.y};
             this.drawNodeInGraph(coordinates, this.nodeSelectedColor);
+        } else {
+            // if new node contain null then changing color of previously selected node (old state)
+            // to normal color
+            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y};
+            this.drawNodeInGraph(coordinates, this.nodeColor);
         }
     }
 
