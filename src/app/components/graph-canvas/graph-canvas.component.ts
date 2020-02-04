@@ -95,9 +95,12 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
             // older selecting will reset
             this.store.dispatch(new GraphCanvasActions.ClearNodeSelection());
 
-            // creating new node
-            this.generateNode(clickCoordinates);
-            this.drawNodeInGraph(clickCoordinates, this.nodeColor);
+            // validating new coordinates(checking if we can create new node or not)
+            if (this.validateCoorinate(clickCoordinates)) {
+                // creating new node
+                this.generateNode(clickCoordinates);
+                this.drawNodeInGraph(clickCoordinates, this.nodeColor);
+            }
 
         } else if (this.selectedNode) {
             // any node is already selected then join both node
@@ -152,6 +155,19 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         return this.nodes.find(node => {
             return Utils.isBetween(coordinates.x, node.x - this.nodeRadius, node.x + this.nodeRadius) &&
                 Utils.isBetween(coordinates.y, node.y - this.nodeRadius, node.y + this.nodeRadius);
+        });
+    }
+
+    // This function will validate if for given coordinate we can generate node or not
+    // Will return true in case of no conflicts
+    // Will return false for validation failure(if new node will overlap any previous node)
+    private validateCoorinate(coordinates: Coordinates): boolean {
+        // defining danger radius in which nodes can overlap
+        const conflictRadius = 2 * this.nodeRadius;
+        // if any new coordinate is in confict area of any previous node then return false
+        return !this.nodes.some(node => {
+            return Utils.isBetween(coordinates.x, node.x - conflictRadius, node.x + conflictRadius) &&
+            Utils.isBetween(coordinates.y, node.y - conflictRadius, node.y + conflictRadius);
         });
     }
 
