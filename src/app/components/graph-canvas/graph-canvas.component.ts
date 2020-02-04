@@ -1,10 +1,12 @@
-import { Component,
-        ElementRef,
-        ViewChild,
-        AfterViewInit,
-        ChangeDetectorRef,
-        OnInit,
-        OnDestroy } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    ViewChild,
+    AfterViewInit,
+    ChangeDetectorRef,
+    OnInit,
+    OnDestroy
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
@@ -40,14 +42,14 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     private graphCanvasState: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
-                private graphStoreService: GraphStoreService,
-                private store: Store<{graphCanvas: {selectedNode: Node|null}}>) {}
+        private graphStoreService: GraphStoreService,
+        private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
 
     ngOnInit() {
         // setting subscription for graph canvas state
         this.graphCanvasState = this.store.select('graphCanvas').subscribe(state => {
-                this.selectedNode = state.selectedNode;
-            });
+            this.selectedNode = state.selectedNode;
+        });
     }
 
     ngAfterViewInit() {
@@ -135,8 +137,21 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.lineWidth = 5;
 
         context.beginPath();
-        context.moveTo(nodeA.x, nodeA.y);
-        context.lineTo(nodeB.x, nodeB.y);
+        //delta to check whether the line is vertically inclined or horizontally.
+        //if deltaX is more than line is inclined horizontally, vertically otherwise.
+        const deltaX = Math.abs(nodeA.x - nodeB.x);
+        const deltaY = Math.abs(nodeA.y - nodeB.y);
+
+        //Based on delta adjust the line to begin at edge of the source node to the edge of the target node
+        //if deltaX is greater than deltaY adjust the x coordinates else adjust the y Coordinates
+        //the line is not exactly straight though, need to fix later
+        if (deltaX > deltaY) {
+            context.moveTo(nodeA.x + this.nodeRadius, nodeA.y);
+            context.lineTo(nodeB.x - this.nodeRadius, nodeB.y);
+        } else {
+            context.moveTo(nodeA.x, nodeA.y - this.nodeRadius);
+            context.lineTo(nodeB.x, nodeB.y + this.nodeRadius);
+        }
         context.stroke();
         context.closePath();
     }
