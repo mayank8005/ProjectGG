@@ -26,7 +26,10 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         width: 1024,
         height: 1024
     };
+    // Purple color
     public nodeColor = '#0336FF';
+    // Red color
+    public nodeSelectedColor = '#FF0266';
     public selectedNode: Node | null = null;
     // This object contain node if user hover on a node
     // null if user is not hovering on any node
@@ -46,6 +49,9 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnInit() {
         // setting subscription for graph canvas state
         this.graphCanvasState = this.store.select('graphCanvas').subscribe(state => {
+                // Need to handle canvas changes before actually changing selected node
+                // to handle de-selection case(by determining diff between new and old state)
+                this.handleCanvasOnNodeSelection(state.selectedNode, this.selectedNode);
                 this.selectedNode = state.selectedNode;
             });
     }
@@ -93,7 +99,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
             if (this.validateCoorinate(clickCoordinates)) {
                 // creating new node
                 this.generateNode(clickCoordinates);
-                this.createNodeInGraph(clickCoordinates);
+                this.drawNodeInGraph(clickCoordinates, this.nodeColor);
             }
 
         } else if (this.selectedNode) {
@@ -204,12 +210,32 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         };
     }
 
-    // draw node in graph @ given coordinate
-    private createNodeInGraph(canvasCoordinates: Coordinates) {
+    // this function handle node selection and de-selection in graph(camvas level changes)
+    private handleCanvasOnNodeSelection(newSelectionState: Node|null, oldSelectionState: Node|null): void {
+        // :NOTE both new and old selectionState cannot be Node object at same time
+        // atleast one of them will be null
+
+        // if node selection new and old state both are null then do nothing
+        if (!newSelectionState && !oldSelectionState) {
+            return;
+        } else if (newSelectionState) {
+            // if new state contain some node then changing that nodes color to selected color
+            const coordinates: Coordinates = {x: newSelectionState.x, y: newSelectionState.y};
+            this.drawNodeInGraph(coordinates, this.nodeSelectedColor);
+        } else {
+            // if new node contain null then changing color of previously selected node (old state)
+            // to normal color
+            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y};
+            this.drawNodeInGraph(coordinates, this.nodeColor);
+        }
+    }
+
+    // draw node in graph @ given coordinate with given color
+    private drawNodeInGraph(canvasCoordinates: Coordinates, color: string) {
 
         const { x, y } = canvasCoordinates;
         const context = this.graph.nativeElement.getContext('2d');
-        context.fillStyle = this.nodeColor;
+        context.fillStyle = color;
         context.beginPath();
         context.arc(x, y, this.nodeRadius, 0, 2 * Math.PI);
         context.fill();
