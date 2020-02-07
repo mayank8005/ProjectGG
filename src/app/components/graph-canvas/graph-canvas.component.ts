@@ -137,21 +137,12 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.lineWidth = 5;
 
         context.beginPath();
-        //delta to check whether the line is vertically inclined or horizontally.
-        //if deltaX is more than line is inclined horizontally, vertically otherwise.
-        const deltaX = Math.abs(nodeA.x - nodeB.x);
-        const deltaY = Math.abs(nodeA.y - nodeB.y);
 
-        //Based on delta adjust the line to begin at edge of the source node to the edge of the target node
-        //if deltaX is greater than deltaY adjust the x coordinates else adjust the y Coordinates
-        //the line is not exactly straight though, need to fix later
-        if (deltaX > deltaY) {
-            context.moveTo(nodeA.x + this.nodeRadius, nodeA.y);
-            context.lineTo(nodeB.x - this.nodeRadius, nodeB.y);
-        } else {
-            context.moveTo(nodeA.x, nodeA.y - this.nodeRadius);
-            context.lineTo(nodeB.x, nodeB.y + this.nodeRadius);
-        }
+        //creates an edge from nodeA to nodeB
+        const edge = Utils.drawShorterLine(nodeA, nodeB, { start: this.nodeRadius, end: this.nodeRadius });
+        const { start, end } = edge;//pulls the start and end coordinates from the edge
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
         context.stroke();
         context.closePath();
     }
