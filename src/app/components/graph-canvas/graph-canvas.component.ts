@@ -12,7 +12,8 @@ import { Subscription } from 'rxjs';
 
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
-import { Node, Coordinates } from '../../shared/graph-canvas.model';
+import { Node } from '../../shared/graph-canvas.model';
+import { Coordinates } from '../../shared/Util.model';
 import * as GraphCanvasActions from '../../store/graph-canvas.action';
 
 @Component({

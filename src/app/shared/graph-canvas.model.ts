@@ -3,13 +3,3 @@ export interface Node {
     x: number;
     y: number;
 }
-
-export interface Coordinates {
-    x: number;
-    y: number;
-}
-
-export interface Vector2 {
-    start: Coordinates,
-    end: Coordinates
-}
