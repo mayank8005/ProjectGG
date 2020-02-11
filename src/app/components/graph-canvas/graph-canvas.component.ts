@@ -12,8 +12,7 @@ import { Subscription } from 'rxjs';
 
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
-import { Node } from '../../shared/graph-canvas.model';
-import { Coordinates } from '../../shared/Util.model';
+import { Node, Coordinates, Line } from '../../shared/GraphUtil.model';
 import * as GraphCanvasActions from '../../store/graph-canvas.action';
 
 @Component({
@@ -148,9 +147,11 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
 
         context.beginPath();
 
-        //creates an edge from nodeA to nodeB
-        const edge = Utils.drawShorterLine(nodeA, nodeB, { start: this.nodeRadius, end: this.nodeRadius });
-        const { start, end } = edge;//pulls the start and end coordinates from the edge
+        // creates an edge from nodeA to nodeB from the tip of the nodes
+        const edge = new Line(nodeA, nodeB);
+        // excluding the node radius on both sides as we want to start the edge from the tip of the node
+        const tippedEdge = edge.getShorterLine({reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius});
+        const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
         context.stroke();
@@ -248,4 +249,15 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.fill();
         context.closePath();
     }
+
+    /**
+     * Returns a shorter version of the given line
+     */
+    private drawShorterLine(from: Coordinates, to: Coordinates, reduceAmount: { start: number, end: number }): Line {
+    const start = { x: 0, y: 0 };
+    const end = { x: 0, y: 0 };
+    const line = new Line(from, to);
+    return new Line(start, end);
+    }
+    
 }

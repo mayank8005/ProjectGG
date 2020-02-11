@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Node } from '../shared/graph-canvas.model';
+import { Node } from '../shared/GraphUtil.model';
 
 
 // defining actions strings
