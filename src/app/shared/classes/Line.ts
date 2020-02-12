@@ -1,25 +1,15 @@
-export interface Node {
-    id: string;
-    x: number;
-    y: number;
-}
-
-export interface Coordinates {
-    x: number;
-    y: number;
-}
-
+import { Coordinates } from "../models/GraphUtil.model"
 export class Line {
     public start: Coordinates;
     public end: Coordinates;
-    public vector: Coordinates;
-    public distance: number;
+    private vector: Coordinates;
+    private distance: number;
 
     constructor(start: Coordinates, end: Coordinates) {
         this.start = start;
         this.end = end;
-        const delta = { x: end.x - start.x, y: end.y - start.y };
-        this.vector = { x: delta.x, y: delta.y };
+        const vectorUnits = { x: end.x - start.x, y: end.y - start.y };
+        this.vector = { x: vectorUnits.x, y: vectorUnits.y };
         this.distance = Math.sqrt(Math.pow(this.vector.x, 2) + Math.pow(this.vector.y, 2));
     }
 

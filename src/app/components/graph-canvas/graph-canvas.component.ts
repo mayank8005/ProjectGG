@@ -12,7 +12,8 @@ import { Subscription } from 'rxjs';
 
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
-import { Node, Coordinates, Line } from '../../shared/GraphUtil.model';
+import { Node, Coordinates } from '../../shared/models/GraphUtil.model';
+import { Line } from '../../shared/classes/Line';
 import * as GraphCanvasActions from '../../store/graph-canvas.action';
 
 @Component({
@@ -240,7 +241,6 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
 
     // draw node in graph @ given coordinate with given color
     private drawNodeInGraph(canvasCoordinates: Coordinates, color: string) {
-
         const { x, y } = canvasCoordinates;
         const context = this.graph.nativeElement.getContext('2d');
         context.fillStyle = color;
@@ -248,16 +248,5 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.arc(x, y, this.nodeRadius, 0, 2 * Math.PI);
         context.fill();
         context.closePath();
-    }
-
-    /**
-     * Returns a shorter version of the given line
-     */
-    private drawShorterLine(from: Coordinates, to: Coordinates, reduceAmount: { start: number, end: number }): Line {
-    const start = { x: 0, y: 0 };
-    const end = { x: 0, y: 0 };
-    const line = new Line(from, to);
-    return new Line(start, end);
-    }
-    
+    }    
 }
