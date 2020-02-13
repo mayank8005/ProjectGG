@@ -1,16 +1,19 @@
-import { Component,
-        ElementRef,
-        ViewChild,
-        AfterViewInit,
-        ChangeDetectorRef,
-        OnInit,
-        OnDestroy } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    ViewChild,
+    AfterViewInit,
+    ChangeDetectorRef,
+    OnInit,
+    OnDestroy
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
-import { Node, Coordinates } from '../../shared/graph-canvas.model';
+import { Node, Coordinates } from '../../shared/models/GraphUtil.model';
+import { Line } from '../../shared/classes/Line';
 import * as GraphCanvasActions from '../../store/graph-canvas.action';
 
 @Component({
@@ -43,8 +46,8 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     private graphCanvasState: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
-                private graphStoreService: GraphStoreService,
-                private store: Store<{graphCanvas: {selectedNode: Node|null}}>) {}
+        private graphStoreService: GraphStoreService,
+        private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
 
     ngOnInit() {
         // setting subscription for graph canvas state
@@ -144,8 +147,14 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.lineWidth = 5;
 
         context.beginPath();
-        context.moveTo(nodeA.x, nodeA.y);
-        context.lineTo(nodeB.x, nodeB.y);
+
+        // creates an edge from nodeA to nodeB from the tip of the nodes
+        const edge = new Line(nodeA, nodeB);
+        // excluding the node radius on both sides as we want to start the edge from the tip of the node
+        const tippedEdge = edge.getShorterLine({reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius});
+        const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
         context.stroke();
         context.closePath();
     }
@@ -232,7 +241,6 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
 
     // draw node in graph @ given coordinate with given color
     private drawNodeInGraph(canvasCoordinates: Coordinates, color: string) {
-
         const { x, y } = canvasCoordinates;
         const context = this.graph.nativeElement.getContext('2d');
         context.fillStyle = color;
@@ -240,5 +248,5 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.arc(x, y, this.nodeRadius, 0, 2 * Math.PI);
         context.fill();
         context.closePath();
-    }
+    }    
 }
