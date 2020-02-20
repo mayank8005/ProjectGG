@@ -1,4 +1,4 @@
-import { Coordinates } from "../models/GraphUtil.model"
+import { Coordinates } from '../models/GraphUtil.model';
 export class Line {
     public start: Coordinates;
     public end: Coordinates;
@@ -25,10 +25,10 @@ export class Line {
         start.x = this.start.x + unitVector.x * reduceStartBy;
         start.y = this.start.y + unitVector.y * reduceStartBy;
 
-        //same for end coordinates but with negative sign as we're moving backwards from the end
+        // same for end coordinates but with negative sign as we're moving backwards from the end
         end.x = this.end.x - unitVector.x * reduceEndBy;
         end.y = this.end.y - unitVector.y * reduceEndBy;
-        
+
         return new Line(start, end);
     }
 
