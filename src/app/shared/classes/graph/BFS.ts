@@ -12,13 +12,15 @@ export class BFS {
     // adjacencyList: store graph to be processed
     constructor(private adjacencyList: {nodeId: string, connectedNodes: string[]}[]) {
 
-        // creating node status hashmap for fast processing
-        this.nodeStatus = adjacencyList.reduce((statusObject, node, index) => {
-            return statusObject[node.nodeId] = {
-                status: 0,
-                index
-            };
-        }, {});
+         // creating node status hashmap for fast processing
+        adjacencyList.forEach((node, index) => {
+            this.nodeStatus = Object.assign(this.nodeStatus || {}, {
+                [node.nodeId]: {
+                    status: 0,
+                    index 
+                }                    
+            })
+        });
     }
 
     // This function will traverse the array in BFS pattern and return traversal order
@@ -28,7 +30,7 @@ export class BFS {
         // order array
         const order: string[] = [];
 
-        if (this.adjacencyList.length) {
+        if (!this.adjacencyList.length) {
             return order;
         }
 

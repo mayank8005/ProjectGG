@@ -1,3 +1,5 @@
+import { BFS } from '../shared/classes/graph/BFS';
+
 export class GraphStoreService {
 
     private adjacencyList: {nodeId: string, connectedNodes: string[]}[] = [];
@@ -35,5 +37,9 @@ export class GraphStoreService {
         if (!isDirected && nodeA !== nodeB) {
             this.adjacencyList[nodeBIndex].connectedNodes.push(nodeA);
         }
+
+        const bfs = new BFS(this.adjacencyList);
+        console.log(this.adjacencyList)
+        console.log(bfs.getTraversalOrder())
     }
 }
