@@ -39,7 +39,6 @@ export class GraphStoreService {
         }
 
         const bfs = new BFS(this.adjacencyList);
-        console.log(this.adjacencyList)
-        console.log(bfs.getTraversalOrder())
+        console.log("traversal order:", bfs.getTraversalOrder())
     }
 }

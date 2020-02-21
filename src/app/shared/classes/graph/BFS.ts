@@ -7,14 +7,14 @@ export class BFS {
     // undiscovered means we didn't get to this node yet || representation: 0
     // discovered means we reached this node but its yet to explored || representation: 1
     // processed means we fully explored this node || representation: 2
-    private nodeStatus: {[nodeId: string]: {status: number, index: number}} | null  = null;
+    private nodeStatus: {[nodeId: string]: {status: number, index: number}}  = {};
 
     // adjacencyList: store graph to be processed
     constructor(private adjacencyList: {nodeId: string, connectedNodes: string[]}[]) {
 
          // creating node status hashmap for fast processing
         adjacencyList.forEach((node, index) => {
-            this.nodeStatus = Object.assign(this.nodeStatus || {}, {
+            this.nodeStatus = Object.assign(this.nodeStatus, {
                 [node.nodeId]: {
                     status: 0,
                     index 
