@@ -151,10 +151,22 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         // creates an edge from nodeA to nodeB from the tip of the nodes
         const edge = new Line(nodeA, nodeB);
         // excluding the node radius on both sides as we want to start the edge from the tip of the node
-        const tippedEdge = edge.getShorterLine({reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius});
+        const tippedEdge = edge.getShorterLine({ reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius });
         const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
+        context.moveTo(end.x, end.y);
+        //atan2(y, x) returns the angle θ between the ray to the point (x, y) and the positive x axis, confined to (−π, π]
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        //length of the directional arrow head at the tip of line
+        const arrowHeadLength = 20;
+        //path for the upper part of the arrow with angle θ using the sin and cos values for x and y coordinates respectively
+        context.lineTo(end.x - arrowHeadLength * Math.cos(angle - Math.PI / 6), end.y - arrowHeadLength * Math.sin(angle - Math.PI / 6));
+        //move back to the tip of arrow
+        context.moveTo(end.x, end.y);
+        //alter the signs for cos and sin to draw the bottom part of the arrow
+        context.lineTo(end.x - arrowHeadLength * Math.cos(angle + Math.PI / 6), end.y - arrowHeadLength * Math.sin(angle + Math.PI / 6));
+        //stroke the defined paths on canvas  
         context.stroke();
         context.closePath();
     }
