@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+@Injectable()
 export class GraphStoreService {
 
     private adjacencyList: {nodeId: string, connectedNodes: string[]}[] = [];

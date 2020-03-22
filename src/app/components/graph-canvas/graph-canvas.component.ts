@@ -23,7 +23,7 @@ import * as GraphCanvasActions from '../../store/graph-canvas.action';
 })
 export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
 
-    @ViewChild('graphCanvas', { static: false }) graph: ElementRef;
+    @ViewChild('graphCanvas') graph: ElementRef;
 
     public canvasResolution: { width: number, height: number } = {
         width: 1024,
