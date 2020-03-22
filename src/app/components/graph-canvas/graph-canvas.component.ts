@@ -23,7 +23,7 @@ import * as GraphCanvasActions from '../../store/graph-canvas.action';
 })
 export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
 
-    @ViewChild('graphCanvas', { static: false }) graph: ElementRef;
+    @ViewChild('graphCanvas') graph: ElementRef;
 
     public canvasResolution: { width: number, height: number } = {
         width: 1024,
@@ -46,8 +46,8 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     private graphCanvasState: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
-        private graphStoreService: GraphStoreService,
-        private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
+                private graphStoreService: GraphStoreService,
+                private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
 
     ngOnInit() {
         // setting subscription for graph canvas state
@@ -161,6 +161,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
             this.drawArrowedLine(end, start, arrowHeadLength, context);
         }
         //stroke the defined paths on canvas  
+
         context.stroke();
         context.closePath();
     }
