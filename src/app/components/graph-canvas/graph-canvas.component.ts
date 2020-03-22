@@ -89,6 +89,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     // Will be triggered when user mouse leave the canvas
     public canvasMouseLeave(): void {
         this.hoverObject = null;
+        this.animate(this.graphStoreService.getBFSTraversalOrder());
     }
 
     // called when someone click anywhere in graph canvas
