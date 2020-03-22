@@ -31,8 +31,12 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     };
     // Purple color
     public nodeColor = '#0336FF';
+    // node color in animation selection (color green)
+    // node color when animation function will select a node
+    public nodeAnimationColor = '#90ee02';
     // Red color
     public nodeSelectedColor = '#FF0266';
+
     public selectedNode: Node | null = null;
     // This object contain node if user hover on a node
     // null if user is not hovering on any node
@@ -46,8 +50,8 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     private graphCanvasState: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
-        private graphStoreService: GraphStoreService,
-        private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
+                private graphStoreService: GraphStoreService,
+                private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
 
     ngOnInit() {
         // setting subscription for graph canvas state
@@ -135,6 +139,36 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
+    // This function will reset color of all nodes in graph canvas (regardless of any selection)
+    public resetNodesColor(): void {
+        this.nodes.forEach( node => {
+            const nodeCoordinate: Coordinates = {x: node.x, y: node.y};
+            this.drawNodeInGraph(nodeCoordinate, this.nodeColor);
+        });
+    }
+
+    // This function will animate node in order of nodeIDs passed as a parameter
+    // order of animation will be same as order of array
+    // delay parameter can be passed in milisec to change delay between each node animation
+    // default delay is 1 sec
+    private async animate(nodeIDs: string[], delay: number = 1000): Promise<void> {
+        // resetting node color
+        this.resetNodesColor();
+
+        // getting coordinate of all nodes in graph
+        const coordinateDictionary = this.getCoordinateDictionary();
+
+        // changing node color and adding promise to delay function for 1 sec
+        for (const id of nodeIDs) {
+            // changing node color to animation color
+            this.drawNodeInGraph(coordinateDictionary[id], this.nodeAnimationColor);
+
+            // TODO: find better approch to do this
+            // adding delay to show a pause type effect
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+
     // generate node id in format node-1 where 1 is index of this
     // new node in nodes array
     private generateNewNodeId(): string {
@@ -152,11 +186,21 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         const edge = new Line(nodeA, nodeB);
         // excluding the node radius on both sides as we want to start the edge from the tip of the node
         const tippedEdge = edge.getShorterLine({reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius});
-        const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
+        const { start, end } = tippedEdge; // pulls the start and end coordinates from the tippedEdge
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
         context.stroke();
         context.closePath();
+    }
+
+    // This function return coordinate dictinary (nodeId=> coordinate) using nodes array
+    private getCoordinateDictionary(): {[nodeId: string]: Coordinates} {
+        return this.nodes.reduce((coordinateDictionary, node) => {
+            const {id, x, y} = node;
+            const nodeCoordinate: Coordinates = {x, y};
+            coordinateDictionary[id] = nodeCoordinate;
+            return coordinateDictionary;
+        }, {});
     }
 
     // Will return node whose x and y intersect with the given coordinate else null
@@ -248,5 +292,5 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.arc(x, y, this.nodeRadius, 0, 2 * Math.PI);
         context.fill();
         context.closePath();
-    }    
+    }
 }

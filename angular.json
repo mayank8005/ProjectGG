@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "project-gg"
+    }
+  },
+  "defaultProject": "project-gg",
+  "cli": {
+    "analytics": false
+  }
 }
