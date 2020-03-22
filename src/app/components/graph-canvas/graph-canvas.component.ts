@@ -46,8 +46,8 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     private graphCanvasState: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
-        private graphStoreService: GraphStoreService,
-        private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
+                private graphStoreService: GraphStoreService,
+                private store: Store<{ graphCanvas: { selectedNode: Node | null } }>) { }
 
     ngOnInit() {
         // setting subscription for graph canvas state
@@ -152,7 +152,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         const edge = new Line(nodeA, nodeB);
         // excluding the node radius on both sides as we want to start the edge from the tip of the node
         const tippedEdge = edge.getShorterLine({reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius});
-        const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
+        const { start, end } = tippedEdge; // pulls the start and end coordinates from the tippedEdge
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
         context.stroke();
@@ -248,5 +248,5 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         context.arc(x, y, this.nodeRadius, 0, 2 * Math.PI);
         context.fill();
         context.closePath();
-    }    
+    }
 }
