@@ -1,0 +1,10 @@
+<section class="algo-menu">
+    <div class="algo-menu__header">
+        {{ headerText }}
+    </div>
+    <div class="algo-menu__btn-panel">
+        <button *ngFor="let button of buttons" class="algo-menu__btn-panel__btn" (click)="button.onClickHandler()">
+            {{ button.getLabel() }}
+        </button>
+    </div>
+</section>

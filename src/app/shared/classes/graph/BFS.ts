@@ -17,9 +17,9 @@ export class BFS {
             this.nodeStatus = Object.assign(this.nodeStatus, {
                 [node.nodeId]: {
                     status: 0,
-                    index 
-                }                    
-            })
+                    index
+                }
+            });
         });
     }
 

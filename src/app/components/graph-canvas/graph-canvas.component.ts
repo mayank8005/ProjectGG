@@ -8,13 +8,14 @@ import {
     OnDestroy
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
 import { Node, Coordinates } from '../../shared/models/GraphUtil.model';
 import { Line } from '../../shared/classes/Line';
 import * as GraphCanvasActions from '../../store/graph-canvas.action';
+import AlgoButton from '../../shared/classes/AlgoButton';
 
 @Component({
     selector: 'app-graph-canvas',
@@ -29,6 +30,9 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         width: 1024,
         height: 1024
     };
+
+    private algoControlReceiver: Observable<string> = AlgoButton.getControlReceiver();
+
     // Purple color
     public nodeColor = '#0336FF';
     // node color in animation selection (color green)
@@ -48,6 +52,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     // that node will be selected if no node is selected
 
     private graphCanvasState: Subscription;
+    private algoTrigger: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
                 private graphStoreService: GraphStoreService,
@@ -61,6 +66,11 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
                 this.handleCanvasOnNodeSelection(state.selectedNode, this.selectedNode);
                 this.selectedNode = state.selectedNode;
             });
+
+        // setting trigger for algorithm
+        this.algoTrigger = this.algoControlReceiver.subscribe({
+            next: (algorithmId) => this.animate(this.graphStoreService.getAlgorithmTraversalOrder(algorithmId))
+        });
     }
 
     ngAfterViewInit() {
@@ -78,6 +88,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnDestroy() {
         // destroying Subscription on destroy
         this.graphCanvasState.unsubscribe();
+        this.algoTrigger.unsubscribe();
     }
 
     // Will be triggered when user hover on canvas
@@ -89,7 +100,6 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     // Will be triggered when user mouse leave the canvas
     public canvasMouseLeave(): void {
         this.hoverObject = null;
-        this.animate(this.graphStoreService.getBFSTraversalOrder());
     }
 
     // called when someone click anywhere in graph canvas

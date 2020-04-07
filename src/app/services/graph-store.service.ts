@@ -42,6 +42,17 @@ export class GraphStoreService {
         }
     }
 
+    public getAlgorithmTraversalOrder(id: string): string[] {
+
+        // running algoritm based on id if no algorthm exist return empty array
+        switch (id) {
+            case 'bfs':
+                return this.getBFSTraversalOrder();
+            default:
+                return [];
+        }
+    }
+
     public getBFSTraversalOrder(): string[] {
         const bfs = new BFS(this.adjacencyList);
         return bfs.getTraversalOrder();
