@@ -52,11 +52,11 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnInit() {
         // setting subscription for graph canvas state
         this.graphCanvasState = this.store.select('graphCanvas').subscribe(state => {
-                // Need to handle canvas changes before actually changing selected node
-                // to handle de-selection case(by determining diff between new and old state)
-                this.handleCanvasOnNodeSelection(state.selectedNode, this.selectedNode);
-                this.selectedNode = state.selectedNode;
-            });
+            // Need to handle canvas changes before actually changing selected node
+            // to handle de-selection case(by determining diff between new and old state)
+            this.handleCanvasOnNodeSelection(state.selectedNode, this.selectedNode);
+            this.selectedNode = state.selectedNode;
+        });
     }
 
     ngAfterViewInit() {
@@ -142,7 +142,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     // This function will draw edge betwwen two node in canvas
-    private joinNodeByEdge(nodeA: Coordinates, nodeB: Coordinates): void {
+    private joinNodeByEdge(nodeA: Coordinates, nodeB: Coordinates, isBiDirectional: Boolean = false): void {
         const context = this.graph.nativeElement.getContext('2d');
         context.lineWidth = 5;
 
@@ -151,12 +151,33 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         // creates an edge from nodeA to nodeB from the tip of the nodes
         const edge = new Line(nodeA, nodeB);
         // excluding the node radius on both sides as we want to start the edge from the tip of the node
-        const tippedEdge = edge.getShorterLine({reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius});
-        const { start, end } = tippedEdge; // pulls the start and end coordinates from the tippedEdge
-        context.moveTo(start.x, start.y);
-        context.lineTo(end.x, end.y);
+        const tippedEdge = edge.getShorterLine({ reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius });
+        const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
+        //length of the directional arrow head at the tip of line
+        const arrowHeadLength = 20;
+        this.drawArrowedLine(start, end, arrowHeadLength, context);
+        // draw arrowed line from end to start as well if its bidirectional
+        if (isBiDirectional) {
+            this.drawArrowedLine(end, start, arrowHeadLength, context);
+        }
+        //stroke the defined paths on canvas  
+
         context.stroke();
         context.closePath();
+    }
+
+    private drawArrowedLine(start: Coordinates, end: Coordinates, arrowHeadLength: any, context: any) {
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
+        context.moveTo(end.x, end.y);
+        //atan2(y, x) returns the angle θ between the ray to the point (x, y) and the positive x axis, confined to (−π, π]
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        //path for the upper part of the arrow with angle θ using the sin and cos values for x and y coordinates respectively      
+        context.lineTo(end.x - arrowHeadLength * Math.cos(angle - Math.PI / 6), end.y - arrowHeadLength * Math.sin(angle - Math.PI / 6));
+        //move back to the tip of arrow
+        context.moveTo(end.x, end.y);
+        //alter the signs for cos and sin to draw the bottom part of the arrow
+        context.lineTo(end.x - arrowHeadLength * Math.cos(angle + Math.PI / 6), end.y - arrowHeadLength * Math.sin(angle + Math.PI / 6));
     }
 
     // Will return node whose x and y intersect with the given coordinate else null
@@ -176,7 +197,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         // if any new coordinate is in confict area of any previous node then return false
         return !this.nodes.some(node => {
             return Utils.isBetween(coordinates.x, node.x - conflictRadius, node.x + conflictRadius) &&
-            Utils.isBetween(coordinates.y, node.y - conflictRadius, node.y + conflictRadius);
+                Utils.isBetween(coordinates.y, node.y - conflictRadius, node.y + conflictRadius);
         });
     }
 
@@ -220,7 +241,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     // this function handle node selection and de-selection in graph(camvas level changes)
-    private handleCanvasOnNodeSelection(newSelectionState: Node|null, oldSelectionState: Node|null): void {
+    private handleCanvasOnNodeSelection(newSelectionState: Node | null, oldSelectionState: Node | null): void {
         // :NOTE both new and old selectionState cannot be Node object at same time
         // atleast one of them will be null
 
@@ -229,12 +250,12 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
             return;
         } else if (newSelectionState) {
             // if new state contain some node then changing that nodes color to selected color
-            const coordinates: Coordinates = {x: newSelectionState.x, y: newSelectionState.y};
+            const coordinates: Coordinates = { x: newSelectionState.x, y: newSelectionState.y };
             this.drawNodeInGraph(coordinates, this.nodeSelectedColor);
         } else {
             // if new node contain null then changing color of previously selected node (old state)
             // to normal color
-            const coordinates: Coordinates = {x: oldSelectionState.x, y: oldSelectionState.y};
+            const coordinates: Coordinates = { x: oldSelectionState.x, y: oldSelectionState.y };
             this.drawNodeInGraph(coordinates, this.nodeColor);
         }
     }
