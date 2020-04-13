@@ -191,7 +191,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     // This function will draw edge betwwen two node in canvas
-    private joinNodeByEdge(nodeA: Coordinates, nodeB: Coordinates): void {
+    private joinNodeByEdge(nodeA: Coordinates, nodeB: Coordinates, isBiDirectional: Boolean = false): void {
         const context = this.graph.nativeElement.getContext('2d');
         context.lineWidth = 5;
 
