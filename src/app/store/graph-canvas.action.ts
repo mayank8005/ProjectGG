@@ -6,6 +6,7 @@ import { Node } from '../shared/models/GraphUtil.model';
 export const SELECT_NODE = 'SELECT_NODE';
 export const CLEAR_NODE_SELECTION = 'CLEAR_NODE_SELECTION';
 
+
 export class SelectNode implements Action {
 
     public readonly type = SELECT_NODE;
@@ -17,5 +18,6 @@ export class ClearNodeSelection implements Action {
 
     public readonly type = CLEAR_NODE_SELECTION;
 }
+
 
 export type graphCanvasActions = SelectNode | ClearNodeSelection;

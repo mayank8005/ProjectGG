@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
-import { HeaderComponent, GraphCanvasComponent, AlgoMenuComponent } from './components';
+import { HeaderComponent, GraphCanvasComponent, AlgoMenuComponent, AlgoButtonComponent } from './components';
 import { graphCanvasReducer } from './store/graph-canvas.reducer';
 import { HyphenPipe } from './pipes/hyphen';
 
@@ -13,7 +13,8 @@ import { HyphenPipe } from './pipes/hyphen';
     HeaderComponent,
     GraphCanvasComponent,
     AlgoMenuComponent,
-    HyphenPipe
+    HyphenPipe,
+    AlgoButtonComponent
   ],
   imports: [
     BrowserModule,

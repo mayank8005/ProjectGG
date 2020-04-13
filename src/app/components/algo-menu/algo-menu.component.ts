@@ -4,7 +4,6 @@ import {
 
 import CONSTANT from '../../../lib/CONSTANTS';
 import Algorithms from '../../../lib/Algorithms';
-import AlgoButton from '../../shared/classes/AlgoButton';
 
 @Component({
     selector: 'app-algo-menu',
@@ -13,5 +12,5 @@ import AlgoButton from '../../shared/classes/AlgoButton';
 })
 export class AlgoMenuComponent {
     headerText = CONSTANT['application.algoMenuHeading'];
-    buttons = Algorithms.map(algorithm => new AlgoButton(algorithm.text, algorithm.id));
+    algorithms = Algorithms;
 }
