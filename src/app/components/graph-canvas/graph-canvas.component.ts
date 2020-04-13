@@ -8,13 +8,14 @@ import {
     OnDestroy
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 import * as Utils from '../../../lib/Utils';
 import { GraphStoreService } from 'src/app/services/graph-store.service';
 import { Node, Coordinates } from '../../shared/models/GraphUtil.model';
 import { Line } from '../../shared/classes/Line';
 import * as GraphCanvasActions from '../../store/graph-canvas.action';
+import AlogoController from '../../shared/classes/AlgoController';
 
 @Component({
     selector: 'app-graph-canvas',
@@ -29,14 +30,22 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         width: 1024,
         height: 1024
     };
+
     // Purple color
     public nodeColor = '#0336FF';
+    // node color in animation selection (color green)
+    // node color when animation function will select a node
+    public nodeAnimationColor = '#90ee02';
     // Red color
     public nodeSelectedColor = '#FF0266';
+
     public selectedNode: Node | null = null;
     // This object contain node if user hover on a node
     // null if user is not hovering on any node
     public hoverObject: Node | null = null;
+
+    // NOTE: setting graph as undirected so sending it as false
+    public isDirectedGraph = false;
 
     private nodeRadius = 20;
     private nodes: Node[] = [];
@@ -44,6 +53,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     // that node will be selected if no node is selected
 
     private graphCanvasState: Subscription;
+    private algoTrigger: Subscription;
 
     constructor(private changeDetectionRef: ChangeDetectorRef,
                 private graphStoreService: GraphStoreService,
@@ -52,10 +62,18 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnInit() {
         // setting subscription for graph canvas state
         this.graphCanvasState = this.store.select('graphCanvas').subscribe(state => {
-            // Need to handle canvas changes before actually changing selected node
-            // to handle de-selection case(by determining diff between new and old state)
-            this.handleCanvasOnNodeSelection(state.selectedNode, this.selectedNode);
-            this.selectedNode = state.selectedNode;
+                // Need to handle canvas changes before actually changing selected node
+                // to handle de-selection case(by determining diff between new and old state)
+                this.handleCanvasOnNodeSelection(state.selectedNode, this.selectedNode);
+                this.selectedNode = state.selectedNode;
+            });
+
+        // getting algo control reciever from algoController class
+        const algoControlReceiver: Observable<string> = AlogoController.getAlgoControlReciever();
+
+        // setting trigger for algorithm
+        this.algoTrigger = algoControlReceiver.subscribe({
+            next: (algorithmId) => this.animate(this.graphStoreService.getAlgorithmTraversalOrder(algorithmId))
         });
     }
 
@@ -74,6 +92,7 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnDestroy() {
         // destroying Subscription on destroy
         this.graphCanvasState.unsubscribe();
+        this.algoTrigger.unsubscribe();
     }
 
     // Will be triggered when user hover on canvas
@@ -119,9 +138,9 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
                 y: nodeSelected.y
             };
 
-            // NOTE: setting graph as undirected so sending it as false
+
             // adding edge in graphStoreService
-            this.graphStoreService.addConnection(this.selectedNode.id, nodeSelected.id, false);
+            this.graphStoreService.addConnection(this.selectedNode.id, nodeSelected.id, this.isDirectedGraph);
 
             // joining nodes in canvas
             this.joinNodeByEdge(initialSelectedNodeCoord, newSelectedNodeCoord);
@@ -132,6 +151,36 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         } else {
             // else no node was selected till now so selecting this node
             this.store.dispatch(new GraphCanvasActions.SelectNode(nodeSelected));
+        }
+    }
+
+    // This function will reset color of all nodes in graph canvas (regardless of any selection)
+    public resetNodesColor(): void {
+        this.nodes.forEach( node => {
+            const nodeCoordinate: Coordinates = {x: node.x, y: node.y};
+            this.drawNodeInGraph(nodeCoordinate, this.nodeColor);
+        });
+    }
+
+    // This function will animate node in order of nodeIDs passed as a parameter
+    // order of animation will be same as order of array
+    // delay parameter can be passed in milisec to change delay between each node animation
+    // default delay is 1 sec
+    private async animate(nodeIDs: string[], delay: number = 1000): Promise<void> {
+        // resetting node color
+        this.resetNodesColor();
+
+        // getting coordinate of all nodes in graph
+        const coordinateDictionary = this.getCoordinateDictionary();
+
+        // changing node color and adding promise to delay function for 1 sec
+        for (const id of nodeIDs) {
+            // changing node color to animation color
+            this.drawNodeInGraph(coordinateDictionary[id], this.nodeAnimationColor);
+
+            // TODO: find better approch to do this
+            // adding delay to show a pause type effect
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 
@@ -152,31 +201,41 @@ export class GraphCanvasComponent implements AfterViewInit, OnInit, OnDestroy {
         const edge = new Line(nodeA, nodeB);
         // excluding the node radius on both sides as we want to start the edge from the tip of the node
         const tippedEdge = edge.getShorterLine({ reduceStartBy: this.nodeRadius, reduceEndBy: this.nodeRadius });
-        const { start, end } = tippedEdge;// pulls the start and end coordinates from the tippedEdge
-        //length of the directional arrow head at the tip of line
+        const { start, end } = tippedEdge; // pulls the start and end coordinates from the tippedEdge
+        // length of the directional arrow head at the tip of line
         const arrowHeadLength = 20;
         this.drawArrowedLine(start, end, arrowHeadLength, context);
         // draw arrowed line from end to start as well if its bidirectional
-        if (isBiDirectional) {
+        if (!this.isDirectedGraph) {
             this.drawArrowedLine(end, start, arrowHeadLength, context);
         }
-        //stroke the defined paths on canvas  
+        // stroke the defined paths on canvas
 
         context.stroke();
         context.closePath();
+    }
+
+    // This function return coordinate dictinary (nodeId=> coordinate) using nodes array
+    private getCoordinateDictionary(): {[nodeId: string]: Coordinates} {
+        return this.nodes.reduce((coordinateDictionary, node) => {
+            const {id, x, y} = node;
+            const nodeCoordinate: Coordinates = {x, y};
+            coordinateDictionary[id] = nodeCoordinate;
+            return coordinateDictionary;
+        }, {});
     }
 
     private drawArrowedLine(start: Coordinates, end: Coordinates, arrowHeadLength: any, context: any) {
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
         context.moveTo(end.x, end.y);
-        //atan2(y, x) returns the angle θ between the ray to the point (x, y) and the positive x axis, confined to (−π, π]
+        // atan2(y, x) returns the angle θ between the ray to the point (x, y) and the positive x axis, confined to (−π, π]
         const angle = Math.atan2(end.y - start.y, end.x - start.x);
-        //path for the upper part of the arrow with angle θ using the sin and cos values for x and y coordinates respectively      
+        // path for the upper part of the arrow with angle θ using the sin and cos values for x and y coordinates respectively
         context.lineTo(end.x - arrowHeadLength * Math.cos(angle - Math.PI / 6), end.y - arrowHeadLength * Math.sin(angle - Math.PI / 6));
-        //move back to the tip of arrow
+        // move back to the tip of arrow
         context.moveTo(end.x, end.y);
-        //alter the signs for cos and sin to draw the bottom part of the arrow
+        // alter the signs for cos and sin to draw the bottom part of the arrow
         context.lineTo(end.x - arrowHeadLength * Math.cos(angle + Math.PI / 6), end.y - arrowHeadLength * Math.sin(angle + Math.PI / 6));
     }
 

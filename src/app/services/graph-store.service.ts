@@ -1,4 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
+
+import { BFS } from '../shared/classes/graph/BFS';
+
 @Injectable()
 export class GraphStoreService {
 
@@ -37,5 +40,21 @@ export class GraphStoreService {
         if (!isDirected && nodeA !== nodeB) {
             this.adjacencyList[nodeBIndex].connectedNodes.push(nodeA);
         }
+    }
+
+    public getAlgorithmTraversalOrder(id: string): string[] {
+
+        // running algoritm based on id if no algorthm exist return empty array
+        switch (id) {
+            case 'bfs':
+                return this.getBFSTraversalOrder();
+            default:
+                return [];
+        }
+    }
+
+    public getBFSTraversalOrder(): string[] {
+        const bfs = new BFS(this.adjacencyList);
+        return bfs.getTraversalOrder();
     }
 }
