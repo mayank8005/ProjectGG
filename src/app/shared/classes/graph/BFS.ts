@@ -72,7 +72,7 @@ export class BFS {
                 }
             });
 
-            // setting current node as processed after exploration
+            // setting current node as processed after exploration, processed node means that all its subsequent children are enqueued
             this.nodeStatus[this.adjacencyList[currentNodeIndex].nodeId].status = 2;
         }
 

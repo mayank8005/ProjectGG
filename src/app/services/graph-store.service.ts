@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { BFS } from '../shared/classes/graph/BFS';
+import { DFS } from '../shared/classes/graph/DFS';
 
 @Injectable()
 export class GraphStoreService {
@@ -48,6 +49,8 @@ export class GraphStoreService {
         switch (id) {
             case 'bfs':
                 return this.getBFSTraversalOrder();
+            case 'dfs':
+                return this.getDFSTraversalOrder();
             default:
                 return [];
         }
@@ -56,5 +59,10 @@ export class GraphStoreService {
     public getBFSTraversalOrder(): string[] {
         const bfs = new BFS(this.adjacencyList);
         return bfs.getTraversalOrder();
+    }
+    
+    public getDFSTraversalOrder(): string[] {
+        const dfs = new DFS(this.adjacencyList);
+        return dfs.getTraversalOrder();
     }
 }
