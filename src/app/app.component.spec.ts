@@ -21,4 +21,14 @@ describe('AppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     expect(app.title).toEqual('project-gg');
   });
+<<<<<<< HEAD
+=======
+
+  it('should render title in a h1 tag', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('h1').textContent).toContain('Welcome to project-gg!');
+  });
+>>>>>>> 7f93d9987959aba69164e5b4a4bf20653db138c8
 });
