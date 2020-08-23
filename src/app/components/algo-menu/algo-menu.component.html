@@ -1,0 +1,8 @@
+<section class="algo-menu">
+    <div class="algo-menu__header">
+        {{ headerText }}
+    </div>
+    <div class="algo-menu__btn-panel">
+        <app-algo-button *ngFor="let algorithm of algorithms" [label]="algorithm.text" [algoId]="algorithm.id"></app-algo-button>
+    </div>
+</section>

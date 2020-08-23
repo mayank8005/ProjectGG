@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=ZCOOL+QingKe+HuangYou&display=swap');
+
+.algo-menu {
+    margin-top: 30px;
+    padding-left: 5vw;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+.algo-menu__header {
+    width: 90vw;
+    font-weight: bold;
+    font-size: 27px;
+}
+
+.algo-menu__btn-panel {
+    width: 90vw;
+    margin-top: 10px;
+}
+
+.algo-menu__btn-panel__btn {
+    margin: 20px 0;
+    padding: 10px 30px;
+    background-color: #FF0266;
+    color: azure;
+    font-size: 16px;
+    font-weight: bold;
+    border: 0 solid white;
+    border-radius: 30px;
+}

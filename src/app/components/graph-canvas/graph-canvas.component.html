@@ -1,0 +1,25 @@
+<section class="graph-section">
+    <div class="graph-header">
+        <div class="graph-header__text">
+            Graph State
+        </div>
+        <div class="graph-header__text">
+            Selected Node <span class="graph-header__text--light"> {{selectedNode && selectedNode.id | hyphen}} </span>
+        </div>
+        <div class="graph-header__text">
+            <div>
+                Hover node ID
+                <span class="graph-header__text--light"> {{hoverObject && hoverObject.id | hyphen}} </span>
+            </div>
+        </div>
+    </div>
+    <canvas 
+        class="graph-canvas" 
+        (click)="canvasClick($event)" 
+        [width]="canvasResolution.width"
+        [height]="canvasResolution.height"
+        (mousemove)="canvasMouseMove($event)"
+        (mouseleave)="canvasMouseLeave()"
+        #graphCanvas>
+    </canvas>
+</section>
