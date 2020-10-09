@@ -1,18 +1,53 @@
 import { Injectable } from '@angular/core';
+import { Subject, Observable } from 'rxjs';
 
 import { BFS } from '../shared/classes/graph/BFS';
 import { DFS } from '../shared/classes/graph/DFS';
+import { SPT } from '../shared/classes/graph/SPT';
 
 @Injectable()
 export class GraphStoreService {
 
     private adjacencyList: {nodeId: string, connectedNodes: string[]}[] = [];
+    private static nodesController = new Subject<{nodeId: string, connectedNodes: string[]}[]>();
+    private static selectedOptionsController = new Subject<{start:string, end:string}>();
+    private selectedOptionsReceiver: Observable<{start: string, end:string}>;
+    private selectedOptions:{start:string, end:string};
+    constructor(){
+        this.selectedOptionsReceiver = GraphStoreService.getSelectedOptionsReciever();
+        this.selectedOptionsReceiver.subscribe(newSelectedOptions=> {
+            this.selectedOptions = newSelectedOptions;
+        })
+    }
+   
+
+
+
 
     public addNode = (nodeId: string): void => {
         // This will create new entry in adjacency list
         this.adjacencyList.push({
             nodeId, connectedNodes: []
         });
+        GraphStoreService.triggerNodesController(this.adjacencyList);
+    }
+
+    public static getNodesReciever(): Observable<{nodeId: string, connectedNodes: string[]}[]> {
+        return GraphStoreService.nodesController;
+    }
+
+    // This will trigger controller observable to send nodes array to all subscribers
+    public static triggerNodesController(nodes: {nodeId: string, connectedNodes: string[]}[]): void {
+        GraphStoreService.nodesController.next(nodes);
+    }
+
+    public static getSelectedOptionsReciever(): Observable<{start:string, end:string}> {
+        return GraphStoreService.selectedOptionsController;
+    }
+
+    // This will trigger controller observable to send nodes array to all subscribers
+    public static triggerSelectedOptionsController(option: {start:string, end:string}): void {
+        GraphStoreService.selectedOptionsController.next(option);
     }
 
     // return array of all nodeIds
@@ -51,6 +86,8 @@ export class GraphStoreService {
                 return this.getBFSTraversalOrder();
             case 'dfs':
                 return this.getDFSTraversalOrder();
+            case 'spt':
+                return this.getSPT()
             default:
                 return [];
         }
@@ -64,5 +101,12 @@ export class GraphStoreService {
     public getDFSTraversalOrder(): string[] {
         const dfs = new DFS(this.adjacencyList);
         return dfs.getTraversalOrder();
+    }
+
+    public getSPT(): string[] {
+        if(!this.adjacencyList.length) return [];
+        const spt = new SPT(this.adjacencyList);
+        spt.compilePaths(this.selectedOptions.start);
+        return spt.getShortestPath(this.selectedOptions.end) || [];
     }
 }

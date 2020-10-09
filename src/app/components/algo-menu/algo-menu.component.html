@@ -5,4 +5,7 @@
     <div class="algo-menu__btn-panel">
         <app-algo-button *ngFor="let algorithm of algorithms" [label]="algorithm.text" [algoId]="algorithm.id"></app-algo-button>
     </div>
+    <div class="algo-menu__btn-panel">
+        <app-algo-options></app-algo-options>
+    </div>
 </section>

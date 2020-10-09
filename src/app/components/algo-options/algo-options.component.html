@@ -1,0 +1,11 @@
+<div *ngIf="options.length">
+<label>Options: StartNode</label>
+<select class="form-control" id="exampleFormControlSelect1" [(ngModel)]="selectedValueStart" (change)="onChange()">
+        <option *ngFor="let options of options" [value]="options.nodeId">{{options.nodeId}}</option>
+</select>
+
+<label>EndNode</label>
+<select class="form-control" id="exampleFormControlSelect1" [(ngModel)]="selectedValueEnd" (change)="onChange()">
+        <option *ngFor="let options of options" [value]="options.nodeId">{{options.nodeId}}</option>
+</select>
+</div>
