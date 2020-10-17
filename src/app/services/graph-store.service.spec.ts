@@ -77,4 +77,21 @@ describe("Service: GraphStore", ()=>{
         expect(service.getSPT()).toEqual(['1', '2', '5']);
     });
 
+    it("should return proper MST", ()=>{
+        service.addNode("1");
+        service.addNode("2");
+        service.addNode("3");
+        service.addNode("4");
+        service.addNode("5");
+        service.addConnection('1', '3', true);
+        service.addConnection('3', '4', true);
+        service.addConnection('4', '5', true);
+        service.addConnection('1', '2', true);
+        service.addConnection('2', '5', true);
+        service.addConnection('2', '3', true);
+        service.addConnection('1', '4', true);
+        (service as any).selectedOptions = {start:'1', end:'5'};
+        expect(service.getMST()).toEqual(['1', '1', '2', '1', '3', '1', '4', '4', '5']);
+    });
+
 }) 

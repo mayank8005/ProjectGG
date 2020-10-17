@@ -3,23 +3,23 @@ import { Subject, Observable } from 'rxjs';
 
 import { BFS } from '../shared/classes/graph/BFS';
 import { DFS } from '../shared/classes/graph/DFS';
-import { SPT } from '../shared/classes/graph/SPT';
+import { ShortestPathAndSpanningTree } from '../shared/classes/graph/ShortestPathAndSpanningTree';
 
 @Injectable()
 export class GraphStoreService {
 
-    private adjacencyList: {nodeId: string, connectedNodes: string[]}[] = [];
-    private static nodesController = new Subject<{nodeId: string, connectedNodes: string[]}[]>();
-    private static selectedOptionsController = new Subject<{start:string, end:string}>();
-    private selectedOptionsReceiver: Observable<{start: string, end:string}>;
-    private selectedOptions:{start:string, end:string};
-    constructor(){
+    private adjacencyList: { nodeId: string, connectedNodes: string[] }[] = [];
+    private static nodesController = new Subject<{ nodeId: string, connectedNodes: string[] }[]>();
+    private static selectedOptionsController = new Subject<{ start: string, end: string }>();
+    private selectedOptionsReceiver: Observable<{ start: string, end: string }>;
+    private selectedOptions: { start: string, end: string };
+    constructor() {
         this.selectedOptionsReceiver = GraphStoreService.getSelectedOptionsReciever();
-        this.selectedOptionsReceiver.subscribe(newSelectedOptions=> {
+        this.selectedOptionsReceiver.subscribe(newSelectedOptions => {
             this.selectedOptions = newSelectedOptions;
         })
     }
-   
+
 
 
 
@@ -32,27 +32,27 @@ export class GraphStoreService {
         GraphStoreService.triggerNodesController(this.adjacencyList);
     }
 
-    public static getNodesReciever(): Observable<{nodeId: string, connectedNodes: string[]}[]> {
+    public static getNodesReciever(): Observable<{ nodeId: string, connectedNodes: string[] }[]> {
         return GraphStoreService.nodesController;
     }
 
     // This will trigger controller observable to send nodes array to all subscribers
-    public static triggerNodesController(nodes: {nodeId: string, connectedNodes: string[]}[]): void {
+    public static triggerNodesController(nodes: { nodeId: string, connectedNodes: string[] }[]): void {
         GraphStoreService.nodesController.next(nodes);
     }
 
-    public static getSelectedOptionsReciever(): Observable<{start:string, end:string}> {
+    public static getSelectedOptionsReciever(): Observable<{ start: string, end: string }> {
         return GraphStoreService.selectedOptionsController;
     }
 
     // This will trigger controller observable to send nodes array to all subscribers
-    public static triggerSelectedOptionsController(option: {start:string, end:string}): void {
+    public static triggerSelectedOptionsController(option: { start: string, end: string }): void {
         GraphStoreService.selectedOptionsController.next(option);
     }
 
     // return array of all nodeIds
     public getAllNodes = (): string[] => {
-        return this.adjacencyList.map( node => node.nodeId);
+        return this.adjacencyList.map(node => node.nodeId);
     }
 
     // this function require two node id string and a bool
@@ -64,7 +64,7 @@ export class GraphStoreService {
         const nodeAIndex = this.adjacencyList.findIndex(node => node.nodeId === nodeA);
         const nodeBIndex = this.adjacencyList.findIndex(node => node.nodeId === nodeB);
 
-        if (nodeAIndex === -1 || nodeBIndex === -1 ) {
+        if (nodeAIndex === -1 || nodeBIndex === -1) {
             return;
         }
 
@@ -87,7 +87,9 @@ export class GraphStoreService {
             case 'dfs':
                 return this.getDFSTraversalOrder();
             case 'spt':
-                return this.getSPT()
+                return this.getSPT();
+            case 'mst':
+                return this.getMST()
             default:
                 return [];
         }
@@ -97,16 +99,23 @@ export class GraphStoreService {
         const bfs = new BFS(this.adjacencyList);
         return bfs.getTraversalOrder();
     }
-    
+
     public getDFSTraversalOrder(): string[] {
         const dfs = new DFS(this.adjacencyList);
         return dfs.getTraversalOrder();
     }
 
     public getSPT(): string[] {
-        if(!this.adjacencyList.length) return [];
-        const spt = new SPT(this.adjacencyList);
-        spt.compilePaths(this.selectedOptions.start);
+        if (!this.adjacencyList.length) return [];
+        const spt = new ShortestPathAndSpanningTree(this.adjacencyList);
+        spt.compilePaths({ source: this.selectedOptions.start });
         return spt.getShortestPath(this.selectedOptions.end) || [];
+    }
+
+    public getMST(): string[] {
+        if (!this.adjacencyList.length) return [];
+        const mst = new ShortestPathAndSpanningTree(this.adjacencyList);
+        mst.compilePaths({ source: this.selectedOptions.start, isMST: true });
+        return mst.getMST();
     }
 }
