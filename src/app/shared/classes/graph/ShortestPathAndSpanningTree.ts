@@ -25,7 +25,7 @@ export class ShortestPathAndSpanningTree {
         let min = Number.MAX_VALUE, min_index = "-1";
 
         this.adjacencyList.forEach(({ nodeId }) => {
-            if (this.sptSet[nodeId] == false && this.dist[nodeId] <= min) {
+            if (!this.sptSet[nodeId] && this.dist[nodeId] <= min) {
                 min = this.dist[nodeId];
                 min_index = nodeId;
             }
