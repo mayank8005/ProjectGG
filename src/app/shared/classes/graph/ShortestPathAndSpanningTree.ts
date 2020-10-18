@@ -81,7 +81,7 @@ export class ShortestPathAndSpanningTree {
     }
 
     /**
-     * compiles the paths for SPT from a given source
+     * compiles the paths for SPT or MST from a given source
      * @param {compilerOptions} options
      */
     public compilePaths(options: compilerOptions): void {
