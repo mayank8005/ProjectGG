@@ -92,6 +92,7 @@ export class ShortestPathAndSpanningTree {
 
         // Find shortest path for all vertices 
         this.adjacencyList.forEach(() => {
+            //pick the vertex at min distance, which is not yet included in the sptSet
             const u = this.minDistance();
             // Mark the picked vertex as included in SPT set 
             this.sptSet[u] = true;
